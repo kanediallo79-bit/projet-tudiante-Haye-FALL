@@ -1,0 +1,29 @@
+services:
+  spire-server:
+    image: ghcr.io/spiffe/spire-server:1.9.0
+    container_name: spire-server
+    restart: always
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./server:/tmp/spire-server
+      - ./config/server.conf:/opt/spire/conf/server/server.conf
+    networks:
+      - spire-net
+
+  spire-agent:
+    image: ghcr.io/spiffe/spire-agent:1.9.0
+    container_name: spire-agent
+    restart: no
+    depends_on:
+      - spire-server
+    volumes:
+      - ./agent:/tmp/spire-agent
+      - ./config/agent.conf:/opt/spire/conf/agent/agent.conf
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: ["-joinToken", "d61eea17-0ee3-4afb-8749-1fe3bfe086ed"]
+    networks:
+      - spire-net
+
+networks:
+  spire-net:
