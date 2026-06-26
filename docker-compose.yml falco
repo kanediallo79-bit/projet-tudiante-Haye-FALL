@@ -1,0 +1,21 @@
+services:
+  falco:
+    image: falcosecurity/falco-no-driver:latest
+    container_name: falco
+    restart: always
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/host/var/run/docker.sock
+      - /dev:/host/dev
+      - /proc:/host/proc:ro
+      - /boot:/host/boot:ro
+      - /lib/modules:/host/lib/modules:ro
+      - /usr:/host/usr:ro
+      - /etc:/host/etc:ro
+      - ./rules:/etc/falco/rules.d
+    command: falco -o json_output=true
+    networks:
+      - falco-net
+
+networks:
+  falco-net:
